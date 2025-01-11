@@ -1,13 +1,14 @@
 const Router = require("express").Router();
-const Movie = require("../models/Movie");
+const DisplayMovie = require("../models/DisplayMovie");
 const Genre = require("../models/Genre");
+const Movie = require("../models/Movie");
 
 const axios = require("axios");
 
 const TMDB_API_URL = "https://api.themoviedb.org/3";
 const API_KEY = process.env.TMDB_KEY;
 
-async function getMoviesFromTMDb(page) {
+async function getDisplayMoviesFromTMDb(page) {
   try {
     const response = await axios.get(
       `${TMDB_API_URL}/trending/movie/day?language=en-US?`,
@@ -56,36 +57,36 @@ const getGenres = async () => {
     return genres.data.genres;
   } catch (err) {
     console.error("Error fetching movies from TMDb:", err);
-    throw new Error("Failed to retrieve movies");
+    throw new Error("Failed to retrieve DisplayMovies");
   }
 };
 
-const getMovies = async (pages) => {
+const getDisplayMovies = async (pages) => {
   try {
     let tmdbData = [];
 
     for (let i = 1; i <= pages; i++) {
-      const pageData = await getMoviesFromTMDb(i);
+      const pageData = await getDisplayMoviesFromTMDb(i);
       tmdbData.push(pageData);
     }
 
     return tmdbData;
   } catch (error) {
     console.error("Error fetching movies from TMDb:", error);
-    throw new Error("Failed to retrieve movies");
+    throw new Error("Failed to retrieve DisplayMovies");
   }
 };
 
-Router.post("/addMoviesToDB", async (req, res) => {
+Router.post("/addDisplayMoviesToDB", async (req, res) => {
   try {
-    const movies = await getMovies(250);
+    const DisplayMovies = await getDisplayMovies(1);
     const genresCodes = await getGenres();
 
-    for (let i = 0; i < movies.length; i++) {
-      const pageResults = movies[i].results;
-
+    for (let i = 0; i < DisplayMovies.length; i++) {
+      const pageResults = DisplayMovies[i].results;
       for (let j = 0; j < pageResults.length; j++) {
         const title = pageResults[j].title;
+        const rate = pageResults[j].vote_average.toFixed(1);
         let releaseYear = pageResults[j].release_date;
         releaseYear = parseInt(releaseYear.slice(0, 4));
 
@@ -97,8 +98,6 @@ Router.post("/addMoviesToDB", async (req, res) => {
         const genresIds = pageResults[j].genre_ids;
 
         const genresNames = convertGenresIdToString(genresIds, genresCodes);
-        const watched = false;
-        const rating = 1;
 
         const posterPath = `https://image.tmdb.org/t/p/w500${pageResults[j].poster_path}`;
 
@@ -112,47 +111,46 @@ Router.post("/addMoviesToDB", async (req, res) => {
         const validGenres = genreObjects.filter((genre) => genre !== null);
 
         try {
-          const existingMovie = await Movie.findOne({ title, releaseYear });
-          if (!existingMovie) {
-            const newMovie = new Movie({
+          const existingDisplayMovie = await DisplayMovie.findOne({ title, releaseYear });
+          if (!existingDisplayMovie) {
+            const newDisplayMovie = new DisplayMovie({
               title,
               releaseYear,
               genres: validGenres,
-              watched,
-              rating,
+              rating:rate,
               poster: posterPath,
             });
-            await newMovie.save();
+            await newDisplayMovie.save();
             console.log(`Movie ${title} added successfully.`);
           } else {
             console.log(`Movie ${title} already exists in the database.`);
           }
         } catch (err) {
-          console.error(`Error adding movie ${title}:`, err);
+          console.error(`Error adding Movie ${title}:`, err);
         }
       }
     }
 
-    res.status(200).json({ message: "Movies added successfully." });
+    res.status(200).json({ message: "DisplayMovies added successfully." });
   } catch (error) {
-    console.error("Error adding movies to the database:", error);
+    console.error("Error adding DisplayMovies to the database:", error);
     res.status(500).json({ message: error.message });
   }
 });
 
-Router.delete("/cleanMovies", async (req, res) => {
+Router.delete("/cleanDisplayMovies", async (req, res) => {
   try {
-    const result = await Movie.deleteMany({});
+    const result = await DisplayMovie.deleteMany({});
 
     res.status(200).json({
-      message: "All movies have been deleted successfully.",
+      message: "All DisplayMovies have been deleted successfully.",
       deletedCount: result.deletedCount,
     });
   } catch (err) {
-    console.error("Error deleting movies:", err);
+    console.error("Error deleting DisplayMovies:", err);
     res
       .status(500)
-      .json({ message: "Unable to clean movies", error: err.message });
+      .json({ message: "Unable to clean DisplayMovies", error: err.message });
   }
 });
 

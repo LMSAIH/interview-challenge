@@ -1,13 +1,16 @@
 const Router = require("express").Router();
-const DisplayMovie = require("../models/DisplayMovie");
+const Movie = require("../models/Movie");
 const Genre = require("../models/Genre");
+const mongoose = require("mongoose");
 
 const axios = require("axios");
 
-const TMDB_API_URL = "https://api.theDisplayMoviedb.org/3";
+const TMDB_API_URL = "https://api.themoviedb.org/3";
 const API_KEY = process.env.TMDB_KEY;
 
 Router.get("/", async (req, res) => {
+  const user_id = req.user._id;
+
   try {
     //default values
     const {
@@ -18,8 +21,9 @@ Router.get("/", async (req, res) => {
       sortBy = "title",
       sortOrder = "asc",
       year,
+      watched,
       minRating,
-      maxRating
+      maxRating,
     } = req.query;
 
     //convert to ints
@@ -28,9 +32,15 @@ Router.get("/", async (req, res) => {
 
     const filters = {};
 
+    filters.user_id = user_id;
+
     //ignore case
     if (search) {
       filters.title = { $regex: search, $options: "i" };
+    }
+
+    if (watched) {
+      filters.watched = watched;
     }
 
     if (year) {
@@ -67,40 +77,45 @@ Router.get("/", async (req, res) => {
     const sortOptions = {};
     sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
 
-    //array of DisplayMovies with the ones that fit the filters
-    const DisplayMovies = await DisplayMovie.find(filters)
+    //array of Movies with the ones that fit the filters
+    const Movies = await Movie.find(filters)
       .populate("genres")
       .sort(sortOptions)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
-    const totalDisplayMovies = await DisplayMovie.countDocuments(filters);
+    const totalMovies = await Movie.countDocuments(filters);
 
     res.json({
-      data: DisplayMovies,
+      data: Movies,
       meta: {
         currentPage: pageNumber,
-        totalPages: Math.ceil(totalDisplayMovies / pageSize),
-        totalDisplayMovies,
+        totalPages: Math.ceil(totalMovies / pageSize),
+        totalMovies,
       },
     });
   } catch (error) {
-    console.error("Error fetching DisplayMovies:", error);
+    console.error("Error fetching Movies:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 Router.get("/:id", async (req, res) => {
   const id = req.params.id;
+  const user_id = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "no such movie" });
+  }
 
   try {
-    const DisplayMovie = await DisplayMovie.findById(id).populate("genres");
+    const movie = await Movie.findOne({ _id: id, user_id }).populate("genres");
 
-    if (!DisplayMovie) {
-      return res.status(404).json({ message: "DisplayMovie not found" });
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
     }
 
-    res.status(200).json({ data: DisplayMovie });
+    res.status(200).json({ data: movie });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -137,6 +152,7 @@ const matchedGenres = (genresByString, genresByObject) => {
 
 Router.post("/", async (req, res) => {
   const { title, releaseYear, genres, watched, rating, poster } = req.body;
+  const user_id = req.user._id;
 
   try {
     if (!title) {
@@ -156,6 +172,10 @@ Router.post("/", async (req, res) => {
       throw new Error("Missing rating");
     }
 
+    if (rating < 1 || rating > 5) {
+      throw new Error("rating must be a value between 1 and 5");
+    }
+
     if (!poster) {
       throw new Error("Missing poster");
     }
@@ -163,19 +183,18 @@ Router.post("/", async (req, res) => {
     let listOfGenres = await retrieveGenres();
     listOfGenres = matchedGenres(genres, listOfGenres);
 
-    for (let i = 0; i < genres.length; i++) {}
-
-    const DisplayMovie = new DisplayMovie({
+    const movie = new Movie({
       title,
       releaseYear,
       genres: listOfGenres,
       watched,
       rating,
       poster,
+      user_id,
     });
 
-    await DisplayMovie.save();
-    res.status(201).json({ data: DisplayMovie });
+    await movie.save();
+    res.status(201).json({ data: movie });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -184,6 +203,11 @@ Router.post("/", async (req, res) => {
 Router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
+  const user_id = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "no such movie" });
+  }
 
   try {
     if (updates.genres) {
@@ -195,16 +219,20 @@ Router.put("/:id", async (req, res) => {
       updates.genres = listOfGenres;
     }
 
-    const updatedDisplayMovie = await DisplayMovie.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    }).populate("genres");
+    const updatedMovie = await Movie.findOneAndUpdate(
+      { _id: id, user_id: user_id },
+      updates,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate("genres");
 
-    if (!updatedDisplayMovie) {
-      return res.status(404).json({ message: "DisplayMovie not found" });
+    if (!updatedMovie) {
+      return res.status(404).json({ message: "Movie not found" });
     }
 
-    res.status(200).json({ data: updatedDisplayMovie });
+    res.status(200).json({ data: updatedMovie });
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: err.message });
@@ -213,12 +241,17 @@ Router.put("/:id", async (req, res) => {
 
 Router.delete("/:id", async (req, res) => {
   const { id } = req.params;
+  const user_id = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "no such movie" });
+  }
 
   try {
-    const toDelete = await DisplayMovie.findByIdAndDelete(id);
+    const toDelete = await Movie.findOneAndDelete({ _id: id, user_id });
 
-    if(!toDelete){
-        return res.status(404).json({message: "DisplayMovie not found"});
+    if (!toDelete) {
+      return res.status(404).json({ message: "Movie not found" });
     }
 
     res.status(200).json({ message: "Deleted successfully", data: toDelete });
