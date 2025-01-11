@@ -2,6 +2,7 @@ import { Menu03Icon } from "hugeicons-react";
 import { Sun01Icon } from "hugeicons-react";
 import { Film01Icon } from "hugeicons-react";
 
+
 const Dashboard = () => {
     return (
         <div className="dashboard">
