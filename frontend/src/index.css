@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+  @apply bg-black;
+}
+
+#root{
+  @apply w-full;
+
+}
+
+.app{
+  @apply w-full; 
+}
+
+.dashboard{
+  @apply flex flex-row w-full;
+}
+
+.top{
+  @apply z-10 w-full bg-backgroudSecondary p-3 h-20 flex flex-row justify-between;
+}
+
+.leftSectionTop{
+  @apply flex flex-row;
+}
+
+.expandIcon>svg{
+  @apply size-10 fill-white;
+}
+
+.titleAndLogoContainer{
+  @apply flex flex-row gap-5;
+}
+
+.titleAndLogoContainer>h1{
+  @apply text-primary text-3xl;
+}
+
+.titleAndLogoContainer>svg{
+  @apply size-10;
+}
+nav{
+  @apply bg-backgroudSecondary w-2/12 fixed h-full mt-20;
+}
+
+.navContainer{
+  @apply w-full h-full;
+}
