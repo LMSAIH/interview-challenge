@@ -1,9 +1,12 @@
 import { EyeIcon } from "hugeicons-react";
 import { Clock01Icon } from "hugeicons-react";
 import { Delete01Icon } from "hugeicons-react";
+import { useWatchlistContext } from "../hooks/useWatchlistContext";
 import axios from 'axios';
 
-const WatchlistMovie = ({ title, rating, poster, watched, year, id }) => {
+const WatchlistMovie = ({ title, rating, poster, watched, year, id, genres }) => {
+
+    const {dispatch} = useWatchlistContext();
 
     const updateMovie = async (changes) => {
 
@@ -22,6 +25,8 @@ const WatchlistMovie = ({ title, rating, poster, watched, year, id }) => {
                         Authorization: `Bearer ${token}`,
                     }
                 });
+
+                dispatch({type: "UPDATE_MOVIE", payload:response.data.data})
 
         } catch (err) {
             console.error(err);
@@ -59,11 +64,13 @@ const WatchlistMovie = ({ title, rating, poster, watched, year, id }) => {
                 throw new Error("User is not authenticated.");
             }
 
-            const response = await axios.delete(`http://localhost:4000/api/v1/movies/${id}`,{
+            const response = await axios.delete(`http://localhost:4000/api/v1/movies/${id}`, {
                 headers: {
-                Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 }
             });
+
+            dispatch({type:"DELETE_MOVIE",payload:response.data.data });
 
         } catch (err) {
             console.error(err);
@@ -84,6 +91,9 @@ const WatchlistMovie = ({ title, rating, poster, watched, year, id }) => {
                 <p>{year}</p>
                 <Delete01Icon className="deleteIcon" onClick={handleDelete} />
             </div>
+            <p>
+                {"Genres: " + genres.map((genre) => genre.name).join(", ")}
+            </p>
         </div>
     );
 }

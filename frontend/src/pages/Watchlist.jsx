@@ -1,11 +1,14 @@
 import WatchlistMovieContainer from "../components/WatchlistMovieContainer";
 
 const Watchlist = () => {
-    return ( 
+
+
+    return (
         <div className="watchlist">
-            <WatchlistMovieContainer />
+            <WatchlistMovieContainer  />
         </div>
-     );
-}
- 
+    );
+};
+
+
 export default Watchlist;

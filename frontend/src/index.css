@@ -221,3 +221,55 @@ nav{
 .filterContainer>select{
   @apply rounded-lg border-2 border-black ml-2 mr-2;
 }
+
+.watchlist>p{
+  @apply text-white text-center text-xl;
+}
+
+.loginwrapper, .signupwrapper{
+  @apply w-fit m-auto mt-32 text-white border-2 border-secondary p-8 rounded-md;
+}
+
+.login, .signup{
+  @apply flex flex-col;
+}
+
+.login>h1, .signup>h1{
+  @apply text-3xl mb-5;
+}
+
+.accentedLogs{
+  @apply text-third;
+}
+
+.signup .signupUp{
+  @apply text-third;
+}
+
+.login>label, .signup>label{
+  @apply text-xl mb-2;
+}
+
+.login>input, .signup>input{
+  @apply bg-transparent border-b-2 border-r-2 border-secondary mb-2;
+}
+
+.login>button, .signup>button{
+  @apply mt-4 text-2xl border-2 border-white rounded-md p-2;
+}
+
+.login>button:hover, .signup>button:hover{
+  @apply border-blue-400 text-blue-400 duration-300;
+}
+
+.loginError{
+  @apply border-2 border-red-600 bg-red-300 rounded-md mt-5 text-black text-center;
+}
+
+.login>p, .signup>p{
+  @apply mt-4;
+}
+
+.login>p>a, .signup>p>a{
+  @apply text-blue-400;
+}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSignUp } from "../hooks/useSignup";
+import { Link } from "react-router-dom";
 
 const SignUp = () => {
     const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const SignUp = () => {
     return (
         <div className="signupwrapper">
             <form className="signup" onSubmit={handleSubmit}>
-                <h1> SignUp</h1>
+                <h1> Sign<span classname="signupUp">Up</span></h1>
                 <label> Email </label>
                 <input
                     type="email"
@@ -30,7 +31,8 @@ const SignUp = () => {
                     value={password}
                 ></input>
                 <button disabled={isLoading}> Sign Up</button>
-                {error && <div className="LoginError"> {error} </div>}
+                {error && <div className="loginError"> {error} </div>}
+                <p>Already have an account? <Link to="/login"> login </Link></p>
             </form>
         </div>
     );

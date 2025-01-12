@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { CircleArrowLeft01Icon, CircleArrowRight01Icon } from 'hugeicons-react';
 import { Link } from 'react-router-dom';
+import { useWatchlistContext } from '../hooks/useWatchlistContext';
 import WatchlistMovie from './WatchlistMovie';
 
 const genres = [
@@ -12,7 +13,7 @@ const genres = [
 
 const WatchlistMovieContainer = () => {
 
-    const [movies, setMovies] = useState([]);
+    const {movies, dispatch} = useWatchlistContext();
     const [metaData, setMetaData] = useState(null);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -36,11 +37,12 @@ const WatchlistMovieContainer = () => {
                     params: { ...queryParams, page: currentPage }
                 });
 
-                setMovies(response.data.data || []);
+                dispatch({ type: "SET_MOVIES", payload: response.data.data });
                 setMetaData(response.data.meta || {});
                 setError(null);
             } catch (err) {
                 console.error(err);
+                dispatch({ type: "SET_MOVIES", payload: [] });
                 setError(err.message || "Failed to fetch movies.");
             }
         }
@@ -152,7 +154,7 @@ const WatchlistMovieContainer = () => {
             <div className="watchlistMovies">
                 {error && <p className="errorMessage">{error}</p>}
 
-                {movies.length > 0 ? (
+                {movies && movies.length > 0 ? (
                     movies.map((movie) => (
                         <WatchlistMovie
                             key={movie._id}
@@ -161,6 +163,7 @@ const WatchlistMovieContainer = () => {
                             rating={movie.rating}
                             watched={movie.watched}
                             year={movie.releaseYear}
+                            genres ={movie.genres}
                             id={movie._id}
                         />
                     ))

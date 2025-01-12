@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLogIn } from "../hooks/useLogin";
+import { Link } from "react-router-dom";
 
 const LogIn = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ const LogIn = () => {
   return (
     <div className="loginwrapper">
       <form className="login" onSubmit={handleSubmit}>
-        <h1> LogIn</h1>
+        <h1> Log<span className="accentedLogs">In</span></h1>
         <label> Email </label>
         <input
           type="email"
@@ -28,8 +29,9 @@ const LogIn = () => {
           onChange={(e) => setPassword(e.target.value)}
           value={password}
         ></input>
-        <button disabled={isLoading}> Log In</button>
-        {error && <div className="LoginError">{error} </div>}
+        <button disabled={isLoading}> LogIn</button>
+        {error && <div className="loginError">{error} </div>}
+        <p>Don't have an account yet? <Link to="/signup"> signup </Link></p>
       </form>
     </div>
   );
