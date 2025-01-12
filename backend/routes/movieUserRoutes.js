@@ -2,11 +2,12 @@ const Router = require("express").Router();
 const Movie = require("../models/Movie");
 const Genre = require("../models/Genre");
 const mongoose = require("mongoose");
-
-const axios = require("axios");
+const requireAuth = require("../middleware/RequireAuth");
 
 const TMDB_API_URL = "https://api.themoviedb.org/3";
 const API_KEY = process.env.TMDB_KEY;
+
+Router.use(requireAuth);
 
 Router.get("/", async (req, res) => {
   const user_id = req.user._id;
@@ -165,9 +166,7 @@ Router.post("/", async (req, res) => {
     if (!genres) {
       throw new Error("Missing genres");
     }
-    if (!watched) {
-      throw new Error("Missing whether it was watched or not");
-    }
+    
     if (!rating) {
       throw new Error("Missing rating");
     }

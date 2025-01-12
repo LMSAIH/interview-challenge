@@ -1,34 +1,35 @@
 const Router = require("express").Router();
 const DisplayMovie = require("../models/DisplayMovie");
 const Genre = require("../models/Genre");
-
+const requireAuth = require('../middleware/RequireAuth');
 const axios = require("axios");
 
 const TMDB_API_URL = "https://api.theDisplayMoviedb.org/3";
 const API_KEY = process.env.TMDB_KEY;
 
+
+Router.use(requireAuth);
+
 Router.get("/", async (req, res) => {
   try {
-    //default values
+    // Default values
     const {
       page = 1,
       limit = 15,
       search = "",
       genre,
-      sortBy = "title",
-      sortOrder = "asc",
+      sortBy = "rating",
+      sortOrder = "desc",
       year,
       minRating,
-      maxRating
+      maxRating,
     } = req.query;
 
-    //convert to ints
     const pageNumber = parseInt(page, 10);
     const pageSize = parseInt(limit, 10);
 
     const filters = {};
 
-    //ignore case
     if (search) {
       filters.title = { $regex: search, $options: "i" };
     }
@@ -48,7 +49,6 @@ Router.get("/", async (req, res) => {
       }
     }
 
-    //query for genre, currently only supports one
     if (genre) {
       try {
         const queryGenre = await Genre.findOne({ name: genre });
@@ -63,14 +63,12 @@ Router.get("/", async (req, res) => {
       }
     }
 
-    //sort options, in case the order is descinding change it
     const sortOptions = {};
     sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
 
-    //array of DisplayMovies with the ones that fit the filters
     const DisplayMovies = await DisplayMovie.find(filters)
       .populate("genres")
-      .sort(sortOptions)
+      .sort(sortOptions) // Sort movies
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
@@ -89,6 +87,7 @@ Router.get("/", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 Router.get("/:id", async (req, res) => {
   const id = req.params.id;

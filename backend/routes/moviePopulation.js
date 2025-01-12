@@ -79,7 +79,7 @@ const getDisplayMovies = async (pages) => {
 
 Router.post("/addDisplayMoviesToDB", async (req, res) => {
   try {
-    const DisplayMovies = await getDisplayMovies(1);
+    const DisplayMovies = await getDisplayMovies(100);
     const genresCodes = await getGenres();
 
     for (let i = 0; i < DisplayMovies.length; i++) {

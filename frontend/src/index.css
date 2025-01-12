@@ -3,49 +3,221 @@
 @tailwind utilities;
 
 body{
-  @apply bg-black;
+  @apply bg-backgroundPrimary overflow-x-hidden;
 }
 
-#root{
-  @apply w-full;
-
+nav{
+  @apply w-full flex flex-row text-white p-4 justify-between;
 }
 
-.app{
-  @apply w-full; 
-}
-
-.dashboard{
-  @apply flex flex-row w-full;
-}
-
-.top{
-  @apply z-10 w-full bg-backgroudSecondary p-3 h-20 flex flex-row justify-between;
-}
-
-.leftSectionTop{
+.leftNavbarContainer, .rightNavbarContainer, .logoutContainer{
   @apply flex flex-row;
 }
 
-.expandIcon>svg{
-  @apply size-10 fill-white;
+.navLinkContainer{
+  @apply flex flex-row gap-2 mr-5 text-xl border-2 border-white p-2 rounded-md;
 }
 
-.titleAndLogoContainer{
-  @apply flex flex-row gap-5;
+.navLinkContainer:hover{
+  @apply text-third duration-300 border-third;
+}
+.logoutContainer>button{
+  @apply bg-none border-2 border-white p-1 m-0 rounded-sm;
 }
 
-.titleAndLogoContainer>h1{
-  @apply text-primary text-3xl;
+.logoutContainer>button:hover{
+  @apply border-red-500 duration-300 text-red-500;
+}
+.navbarContainer{
+  @apply w-full h-fit;
 }
 
-.titleAndLogoContainer>svg{
-  @apply size-10;
-}
-nav{
-  @apply bg-backgroudSecondary w-2/12 fixed h-full mt-20;
+.bottomNavbar{
+  @apply w-full border-white border-t-2;
 }
 
-.navContainer{
-  @apply w-full h-full;
+.searchBarContainer{
+  @apply w-10/12 ml-auto mr-auto;
+}
+
+.searchBarContainer>form>input{
+  @apply w-full ml-auto mr-auto mb-2;
+}
+
+.movieContainer, .watchlistMovieContainer{
+  @apply p-4 mb-10;
+}
+.movieContainerTitle, .watchlistTitle{
+  @apply text-gray-100 text-center text-2xl mt-10 mb-10;
+}
+
+.movieList, .watchlistMovies{
+  @apply flex flex-wrap flex-row w-full justify-center gap-y-4 ;
+}
+
+.movie, .watchlistMovie{
+  @apply xl:w-1/6 w-1/2 md:w-2/6;
+}
+
+.movie>h3, .movie>p{
+  @apply text-white ;
+}
+
+.movie>img:hover{
+  @apply scale-105 duration-300;
+}
+.movieInfoContainer>h3{
+  @apply text-gray-200 text-lg;
+}
+
+.movieInfoContainer>p{
+  @apply text-gray-400;
+}
+
+.movieInfoContainer>img{
+  @apply w-full;
+}
+
+.movieListFooter{
+  @apply mt-10 p-4;
+}
+
+.movie>svg{
+  @apply size-10 m-auto text-white mt-5;
+}
+
+.movie>svg:hover{
+  @apply text-green-500 duration-300 cursor-pointer;
+}
+
+.movieError{
+  @apply text-white text-xl;
+}
+
+.arrowContainer{
+  @apply flex flex-row w-fit m-auto justify-between;
+}
+
+.iconArrowContainer>svg{
+  @apply md:size-20 text-white size-16;
+}
+
+.iconArrowContainer>svg:hover{
+  @apply text-blue-500 duration-200 cursor-pointer;
+}
+
+.iconArrowContainer>p{
+  @apply text-gray-400 text-center;
+}
+
+.arrowContainer>div{
+  @apply text-white text-lg m-auto p-4 text-gray-300;
+}
+
+.watchlistMovie>h3{
+  @apply text-lg text-gray-200;
+}
+
+.watchlistMovie>p{
+  @apply text-gray-500;
+}
+
+.watchlistMovie>img:hover{
+  @apply scale-105 duration-300;
+}
+
+.watchlistMovieStatus{
+  @apply flex flex-row justify-between p-2 ml-2 mr-2 text-white;
+}
+
+.notWatchedIcon:hover{
+  @apply text-yellow-500 duration-300;
+}
+
+.watchedEyeIcon:hover{
+  @apply text-blue-500 duration-300 cursor-pointer;
+}
+
+.deleteIcon:hover{
+  @apply text-red-600 duration-300 cursor-pointer;
+}
+
+.ratingUpdater{
+  @apply flex flex-row justify-between mt-4 mb-2 ml-4 mr-4;
+}
+
+.ratingUpdater>button{
+  @apply bg-none border-2 border-white rounded-xl text-base text-white p-2;
+}
+
+.ratingUpdater>button:hover{
+  @apply border-yellow-500 duration-300 text-yellow-500;
+}
+
+.addSection{
+  @apply text-white w-fit m-auto text-lg ;
+}
+
+.addSectionLinkContainer{
+  @apply w-fit m-auto mt-5;
+}
+
+.addSectionLinkContainer>a{
+  @apply text-lg text-blue-500;
+}
+
+.addSectionLinkContainer>a:hover{
+  @apply text-third duration-300;
+}
+
+.create{
+  @apply text-white;
+}
+
+.create>h2{
+  @apply text-center text-xl mt-10 mb-10;
+}
+
+.createForm{
+  @apply flex flex-col flex-wrap w-fit m-auto;
+}
+
+.watchedRadios>label>input{
+  @apply mr-2 ml-2 ;
+}
+
+.createForm>input{
+  @apply text-black;
+}
+
+.createForm>select{
+  @apply text-black;
+}
+
+.genresCheckboxes>label{
+  @apply text-base;
+}
+
+.genresCheckboxes>label>input{
+  @apply mr-1 ml-1;
+}
+
+.createSubmit{
+  @apply text-blue-500 mt-5 text-lg;
+}
+
+.createSubmit:hover{
+  @apply text-third duration-300;
+}
+
+.filterMenuContainer{
+  @apply flex flex-row justify-center;
+}
+
+.filterContainer>label{
+  @apply text-white text-lg;
+}
+
+.filterContainer>select{
+  @apply rounded-lg border-2 border-black ml-2 mr-2;
 }

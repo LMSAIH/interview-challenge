@@ -11,7 +11,7 @@ const apiRoutes = require("./routes/apiRoutes");
 const genresRoutes = require("./routes/genresRoutes");
 const movieRoutes = require('./routes/movieUserRoutes');
 const userRoutes = require('./routes/user');
-const requireAuth = require('./middleware/RequireAuth');
+
 
 
 app.use(express.json());
@@ -22,8 +22,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
-app.use("/api/v1", userRoutes );
-app.use(requireAuth);
+app.use("/api/v1", userRoutes);
 app.use("/api/v1",Population);
 app.use("/api/v1/displaymovies",apiRoutes);
 app.use("/api/v1/genres", genresRoutes );
