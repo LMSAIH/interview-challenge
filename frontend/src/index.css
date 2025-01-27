@@ -273,3 +273,7 @@ nav{
 .login>p>a, .signup>p>a{
   @apply text-blue-400;
 }
+
+.searchBar{
+  @apply rounded-md text-lg p-2;
+}
