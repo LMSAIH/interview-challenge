@@ -11,8 +11,6 @@ Router.get("/", userMovieController.getMovies);
 
 Router.get("/:id", userMovieController.getMovieById);
 
-
-
 Router.post("/", userMovieController.createMovie);
 
 Router.put("/:id", userMovieController.updateMovie);
